@@ -7,7 +7,7 @@
     <style>
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            background-color: #e6f7ff; font-family: sans-serif; overflow: hidden; 
+            background-color: #e6f7ff; font-family: Arial, sans-serif; overflow: hidden; 
         }
         body { display: flex; flex-direction: column; }
         
@@ -15,13 +15,16 @@
             display: flex; background-color: #f0f4f8; border-bottom: 3px solid #000;
             z-index: 10; padding: 8px; gap: 8px; align-items: stretch; 
         }
-        .controls-wrapper { display: flex; flex-direction: column; flex-grow: 1; gap: 6px; }
+        .controls-wrapper { display: flex; flex-direction: column; flex-grow: 1; gap: 8px; }
         
-        /* Cập nhật chia làm 6 cột cho 2 nút Mic */
+        /* Hàng cấu hình chế độ */
+        .settings-row { display: flex; gap: 6px; width: 100%; }
+        
+        /* Hàng chứa 6 nút bấm */
         .btn-group { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; width: 100%; }
         
         .custom-select {
-            padding: 6px; font-size: 13px; font-weight: bold; color: #0056b3;
+            padding: 6px 4px; font-size: 13px; font-weight: bold; color: #0056b3;
             border-radius: 6px; border: 1px solid #ccc; background-color: #fff;
             width: 100%; cursor: pointer; outline: none; box-sizing: border-box;
             box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
@@ -44,14 +47,14 @@
         @media (max-width: 500px) {
             .btn-group { grid-template-columns: 1fr 1fr; }
             #fullscreenButton { grid-column: span 2; }
-            #settingsRow, #micSetupRow { flex-direction: column; } 
+            .settings-row { flex-direction: column; } 
         }
 
         .info-panel {
             font-weight: bold; font-size: 13px; color: #d93025; background: #fff;
             padding: 6px; border-radius: 6px; border: 1px solid #ccc; width: 100%;
-            text-align: center; box-sizing: border-box; flex-grow: 1; display: flex;
-            align-items: center; justify-content: center;
+            text-align: center; box-sizing: border-box; display: flex;
+            align-items: center; justify-content: center; min-height: 32px;
         }
 
         button {
@@ -61,11 +64,11 @@
             width: 100%; box-sizing: border-box;
         }
         button:hover { background-color: #0056b3; }
-        button:disabled { background-color: #999 !important; cursor: not-allowed; box-shadow: none; }
+        button:disabled { background-color: #999 !important; cursor: not-allowed; box-shadow: none; color: #ddd; }
         
-        #btnStartA { background-color: #dc3545; } /* Đỏ cho Mic A */
+        #btnStartA { background-color: #dc3545; }
         #btnStartA:hover { background-color: #c82333; }
-        #btnStartB { background-color: #0d6efd; } /* Xanh cho Mic B */
+        #btnStartB { background-color: #0d6efd; }
         #btnStartB:hover { background-color: #0b5ed7; }
         
         #pauseButton { background-color: #28a745; }
@@ -80,38 +83,45 @@
 <body>
     <div class="top-bar">
         <div class="controls-wrapper">
-            <div class="btn-group">
-                <button id="btnStartA">1. Bật Mic A</button>
-                <button id="btnStartB">1. Bật Mic B</button>
-                <button id="pauseButton" disabled>2. Đo / Dừng</button>
-                <button id="resetButton" disabled>3. Làm mới</button>
-                <button id="saveButton" disabled>4. Chụp ảnh đồ thị</button>
-                <button id="fullscreenButton">5. Toàn màn hình</button>
-            </div>
-            
-            <div id="settingsRow" style="display: flex; gap: 6px; width: 100%;">
+            <!-- Dòng 1: Chọn Chức năng / Chế độ -->
+            <div class="settings-row" id="settingsRow">
                 <select id="channelModeSelect" class="custom-select" style="flex: 1.2;">
-                    <option value="1" selected>Chế độ: Đo 1 Nguồn âm (Khóa chéo)</option>
-                    <option value="2">Chế độ: Đo 2 Nguồn âm (Đồng thời)</option>
+                    <option value="1" selected>1. Chọn thiết lập: Đo 1 Nguồn âm (Tự động khóa chéo)</option>
+                    <option value="2">1. Chọn thiết lập: Đo 2 Nguồn âm (Đo song song)</option>
                 </select>
                 
                 <select id="modeSelect" class="custom-select" style="flex: 1;">
-                    <option value="auto" selected>Chức năng: Khảo sát tần số</option>
-                    <option value="continuous">Chức năng: Khảo sát liên tục</option>
+                    <option value="auto" selected>2. Chế độ: Khảo sát tần số (Tự dừng)</option>
+                    <option value="continuous">2. Chế độ: Khảo sát liên tục</option>
                 </select>
 
                 <select id="speedSelect" class="custom-select" style="display: none; flex: 1;">
-                    <option value="fast" selected>Vẽ đồ thị: Nhanh</option>
-                    <option value="slow">Vẽ đồ thị: Chậm</option>
+                    <option value="fast" selected>Tốc độ vẽ: Nhanh</option>
+                    <option value="slow">Tốc độ vẽ: Chậm</option>
                 </select>
             </div>
             
-            <div id="micSetupRow" style="display: none; gap: 6px; width: 100%;">
-                <select id="micSelectA" class="custom-select" style="flex: 1; border-color: #ff0000; color: #ff0000;"></select>
-                <select id="micSelectB" class="custom-select" style="flex: 1; border-color: #0000ff; color: #0000ff;"></select>
+            <!-- Dòng 2: Thiết lập Micro A và B (Nằm dưới chế độ) -->
+            <div class="settings-row" id="micSetupRow">
+                <select id="micSelectA" class="custom-select" style="flex: 1; border-color: #dc3545; color: #dc3545;">
+                    <option value="">-- Kênh A: Đang chờ tải thiết bị --</option>
+                </select>
+                <select id="micSelectB" class="custom-select" style="flex: 1; border-color: #0d6efd; color: #0d6efd;">
+                    <option value="">-- Kênh B: Đang chờ tải thiết bị --</option>
+                </select>
             </div>
             
-            <div class="info-panel" id="infoText">Đang chờ bật Micro...</div>
+            <!-- Dòng 3: Các nút điều khiển -->
+            <div class="btn-group">
+                <button id="btnStartA">Bật Mic A</button>
+                <button id="btnStartB">Bật Mic B</button>
+                <button id="pauseButton" disabled>Đo / Dừng</button>
+                <button id="resetButton" disabled>Làm mới</button>
+                <button id="saveButton" disabled>Chụp ảnh</button>
+                <button id="fullscreenButton">Toàn màn hình</button>
+            </div>
+            
+            <div class="info-panel" id="infoText">Đang chờ khởi động thiết bị Micro...</div>
         </div>
         
         <div class="qr-panel" id="qrPanel">
@@ -123,6 +133,7 @@
     <canvas id="oscilloscope"></canvas>
 
     <script>
+        // Tạo QR Code
         window.addEventListener('DOMContentLoaded', () => {
             const qrImage = document.getElementById('qrImage');
             if (qrImage) {
@@ -132,7 +143,7 @@
             }
         });
 
-        // HTML Elements
+        // Khai báo Elements
         const btnStartA = document.getElementById('btnStartA');
         const btnStartB = document.getElementById('btnStartB');
         const pauseButton = document.getElementById('pauseButton');
@@ -140,20 +151,22 @@
         const saveButton = document.getElementById('saveButton');
         const fullscreenButton = document.getElementById('fullscreenButton');
         const infoText = document.getElementById('infoText');
+        
         const channelModeSelect = document.getElementById('channelModeSelect');
         const modeSelect = document.getElementById('modeSelect');
         const speedSelect = document.getElementById('speedSelect');
+        
         const micSelectA = document.getElementById('micSelectA');
         const micSelectB = document.getElementById('micSelectB');
-        const micSetupRow = document.getElementById('micSetupRow');
+        
         const canvas = document.getElementById('oscilloscope');
         const canvasCtx = canvas.getContext('2d');
         
-        // Audio Configuration
+        // Quản lý Audio & Cấu hình Kênh
         let audioCtx;
         const channelConfig = {
-            A: { stream: null, source: null, processor: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#ff0000', active: false },
-            B: { stream: null, source: null, processor: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#0000ff', active: false }
+            A: { stream: null, source: null, processor: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#dc3545', active: false },
+            B: { stream: null, source: null, processor: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#0d6efd', active: false }
         };
         
         let sampleRate = 48000;
@@ -163,25 +176,27 @@
         let detectedFrequency = 0;
         let lastCorrelateTime = 0;
         let isUserZoomed = false; 
+        
         let totalTimeOnScreen = 5 * (1.0 / 440); 
         let currentZoomY = 2.0;
         let targetFPS = 60; 
         let lastDrawTime = performance.now();
         
-        // Xử lý sự kiện ẩn trang web để chống đơ
+        // Tạm dừng khi ẩn trình duyệt (Tiết kiệm RAM)
         document.addEventListener('visibilitychange', () => {
             if (document.hidden && !isPaused) {
                 isPaused = true;
                 clearTimeout(stopTimer);
-                pauseButton.textContent = "2. Đo / Dừng";
+                pauseButton.textContent = "Đo / Dừng";
                 pauseButton.style.backgroundColor = "#28a745";
-                infoText.textContent = "Đã tạm dừng do ẩn trang (Bấm Làm mới / Đo để tiếp tục)";
+                infoText.textContent = "Hệ thống tạm nghỉ do ẩn trang. Bấm Đo để tiếp tục.";
                 infoText.style.color = "#d93025";
             }
         });
 
-        // UI Event Listeners
+        // Xử lý Thay đổi Chế độ
         speedSelect.addEventListener('change', (e) => targetFPS = (e.target.value === 'slow') ? 10 : 60);
+        
         modeSelect.addEventListener('change', (e) => {
             isContinuousMode = (e.target.value === 'continuous');
             if (isContinuousMode) {
@@ -191,6 +206,7 @@
                 targetFPS = 60; speedSelect.value = "fast"; 
             }
         });
+        
         channelModeSelect.addEventListener('change', updateUIState);
 
         btnStartA.addEventListener('click', () => initAudioChannel('A', micSelectA.value || null));
@@ -199,7 +215,7 @@
         micSelectA.addEventListener('change', (e) => { if(channelConfig.A.active) initAudioChannel('A', e.target.value); });
         micSelectB.addEventListener('change', (e) => { if(channelConfig.B.active) initAudioChannel('B', e.target.value); });
         
-        // Canvas Resize & Zoom
+        // Phóng to / Thu nhỏ Đồ thị (Zooming)
         function resizeCanvas() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; drawFrame(); }
         window.addEventListener('resize', resizeCanvas);
 
@@ -240,7 +256,7 @@
             let elem = document.documentElement;
             let isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
             if (!isFullscreen) {
-                if (elem.requestFullscreen) elem.requestFullscreen().catch(() => alert("Xoay ngang điện thoại nhé!"));
+                if (elem.requestFullscreen) elem.requestFullscreen().catch(() => alert("Vui lòng xoay ngang điện thoại để trải nghiệm tốt nhất!"));
                 else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
                 else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
             } else {
@@ -252,22 +268,24 @@
 
         function updateFullscreenButton() {
             let isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
-            fullscreenButton.textContent = !isFullscreen ? "5. Toàn màn hình" : "5. Thu nhỏ";
+            fullscreenButton.textContent = !isFullscreen ? "Toàn màn hình" : "Thu nhỏ";
             setTimeout(resizeCanvas, 100); 
         }
         document.addEventListener('fullscreenchange', updateFullscreenButton);
         document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
 
-        // Core Functions
+        // Core DSP - Autocorrelation
         function autoCorrelate(buffer, sampleRate) {
             let SIZE = buffer.length, sumSq = 0;
             for (let i = 0; i < SIZE; i++) sumSq += buffer[i] * buffer[i];
             let rootMeanSq = Math.sqrt(sumSq / SIZE);
             if (rootMeanSq < 0.02) return -1; 
+            
             let c = new Array(SIZE).fill(0);
             for (let i = 0; i < SIZE / 2; i++) {
                 for (let j = 0; j < SIZE - i; j++) c[i] += buffer[j] * buffer[j + i];
             }
+            
             let d = 0;
             while (c[d] > c[d + 1] && d < SIZE / 2) d++;
             let maxval = -1, maxpos = -1;
@@ -280,63 +298,72 @@
             return freq;
         }
 
+        // Đổ danh sách Micro vào Select
         async function populateMics() {
             const devices = await navigator.mediaDevices.enumerateDevices();
             const audioInputs = devices.filter(device => device.kind === 'audioinput');
             
             let valA = micSelectA.value, valB = micSelectB.value;
-            micSelectA.innerHTML = '<option value="">-- Mặc định hệ thống --</option>';
-            micSelectB.innerHTML = '<option value="">-- Mặc định hệ thống --</option>';
+            micSelectA.innerHTML = '<option value="">-- Kênh A: Mặc định hệ thống --</option>';
+            micSelectB.innerHTML = '<option value="">-- Kênh B: Mặc định hệ thống --</option>';
             
             audioInputs.forEach((device, index) => {
-                let optA = document.createElement('option'); optA.value = device.deviceId; optA.text = device.label || `Microphone ${index + 1}`;
-                let optB = document.createElement('option'); optB.value = device.deviceId; optB.text = device.label || `Microphone ${index + 1}`;
+                let optA = document.createElement('option'); optA.value = device.deviceId; optA.text = `A: ${device.label || 'Microphone ' + (index + 1)}`;
+                let optB = document.createElement('option'); optB.value = device.deviceId; optB.text = `B: ${device.label || 'Microphone ' + (index + 1)}`;
                 micSelectA.appendChild(optA); micSelectB.appendChild(optB);
             });
             
             if (audioInputs.length > 1) micSelectB.selectedIndex = 2; // Gợi ý Mic số 2 cho kênh B
             if (valA) micSelectA.value = valA;
             if (valB) micSelectB.value = valB;
-            micSetupRow.style.display = 'flex';
         }
 
+        // Cập nhật trạng thái Khóa chéo / UI
         function updateUIState() {
             let mode = channelModeSelect.value;
             
-            // Xử lý nút bật/khoá Micro
             if (mode === '1') {
+                // Chế độ 1 Nguồn: Khóa chéo tự động
                 if (channelConfig.A.active) {
-                    btnStartA.textContent = "Mic A (Đang bật)"; btnStartA.style.backgroundColor = "#28a745";
-                    btnStartB.disabled = true; btnStartB.textContent = "Mic B (Đang Khóa)";
+                    btnStartA.textContent = "Kênh A (Hoạt động)"; btnStartA.style.backgroundColor = "#28a745";
+                    btnStartB.disabled = true; btnStartB.textContent = "Kênh B (Đã Khóa)";
+                    micSelectB.disabled = true;
                 } else if (channelConfig.B.active) {
-                    btnStartB.textContent = "Mic B (Đang bật)"; btnStartB.style.backgroundColor = "#28a745";
-                    btnStartA.disabled = true; btnStartA.textContent = "Mic A (Đang Khóa)";
+                    btnStartB.textContent = "Kênh B (Hoạt động)"; btnStartB.style.backgroundColor = "#28a745";
+                    btnStartA.disabled = true; btnStartA.textContent = "Kênh A (Đã Khóa)";
+                    micSelectA.disabled = true;
                 } else {
-                    btnStartA.disabled = false; btnStartA.textContent = "1. Bật Mic A"; btnStartA.style.backgroundColor = "#dc3545";
-                    btnStartB.disabled = false; btnStartB.textContent = "1. Bật Mic B"; btnStartB.style.backgroundColor = "#0d6efd";
+                    btnStartA.disabled = false; btnStartA.textContent = "Bật Mic A"; btnStartA.style.backgroundColor = "#dc3545";
+                    btnStartB.disabled = false; btnStartB.textContent = "Bật Mic B"; btnStartB.style.backgroundColor = "#0d6efd";
+                    micSelectA.disabled = false; micSelectB.disabled = false;
                 }
             } else {
+                // Chế độ 2 Nguồn: Hoạt động độc lập
+                micSelectA.disabled = false; micSelectB.disabled = false;
                 btnStartA.disabled = false; btnStartB.disabled = false;
-                btnStartA.textContent = channelConfig.A.active ? "Mic A (Đang bật)" : "1. Bật Mic A";
+                
+                btnStartA.textContent = channelConfig.A.active ? "Kênh A (Hoạt động)" : "Bật Mic A";
                 btnStartA.style.backgroundColor = channelConfig.A.active ? "#28a745" : "#dc3545";
-                btnStartB.textContent = channelConfig.B.active ? "Mic B (Đang bật)" : "1. Bật Mic B";
+                
+                btnStartB.textContent = channelConfig.B.active ? "Kênh B (Hoạt động)" : "Bật Mic B";
                 btnStartB.style.backgroundColor = channelConfig.B.active ? "#28a745" : "#0d6efd";
             }
             
-            // Cập nhật Text Panel & Nút điều khiển
+            // Xử lý Bật/Tắt các nút Đo lường
             if (channelConfig.A.active || channelConfig.B.active) {
                 pauseButton.disabled = false; resetButton.disabled = false; saveButton.disabled = false;
                 if (isPaused) {
-                    infoText.innerHTML = "Đã kết nối Mic. Bấm <b>Đo / Dừng</b> để bắt đầu.";
+                    infoText.innerHTML = "Đã kết nối thành công. Bấm <b>Đo / Dừng</b> để bắt đầu vẽ đồ thị.";
                     infoText.style.color = "#007bff";
                 }
             } else {
                 pauseButton.disabled = true; resetButton.disabled = true; saveButton.disabled = true;
-                infoText.innerHTML = "Đang chờ bật Micro...";
+                infoText.innerHTML = "Đang chờ khởi động thiết bị Micro...";
                 infoText.style.color = "#d93025";
             }
         }
 
+        // Khởi tạo luồng Audio (Hỗ trợ chèn Mic song song)
         async function initAudioChannel(channelId, deviceId = null) {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -373,14 +400,25 @@
                 cfg.filterLP.connect(cfg.processor); cfg.processor.connect(cfg.dummy); cfg.dummy.connect(audioCtx.destination);
                 
                 cfg.active = true;
-                isPaused = true;
-                resizeCanvas();
-                drawFrame(true); 
                 
+                // Nếu chưa có tên Mic thì quét lại
                 if (micSelectA.options.length <= 1) await populateMics();
+                
                 updateUIState();
+                
+                // KỸ THUẬT QUAN TRỌNG: Không dừng hệ thống nếu đang vẽ liên tục
+                if (isPaused) {
+                    resizeCanvas();
+                    drawFrame(true);
+                } else {
+                    let text = "Đang thu liên tục: ";
+                    if (channelConfig.A.active) text += "<span style='color:#dc3545'>Kênh A (Đỏ)</span> ";
+                    if (channelConfig.A.active && channelConfig.B.active) text += " & ";
+                    if (channelConfig.B.active) text += "<span style='color:#0d6efd'>Kênh B (Xanh)</span>";
+                    infoText.innerHTML = text;
+                }
             } catch (err) {
-                alert(`Không thể truy cập Mic ${channelId}. Lỗi: ` + err);
+                alert(`Không thể truy cập Micro ở Kênh ${channelId}. Vui lòng kiểm tra quyền thiết bị!`);
             }
         }
 
@@ -390,15 +428,16 @@
                 stopTimer = setTimeout(() => {
                     if (!isPaused) {
                         isPaused = true;
-                        pauseButton.textContent = "2. Đo / Dừng";
+                        pauseButton.textContent = "Đo / Dừng";
                         pauseButton.style.backgroundColor = "#28a745"; 
-                        infoText.innerHTML = "Đã đo xong - Ấn <b>Đo / Dừng</b> để tiếp tục";
+                        infoText.innerHTML = "Đã quét xong - Ấn <b>Đo / Dừng</b> để tiếp tục";
                         infoText.style.color = "#d93025";
                     }
                 }, 2000); 
             }
         }
 
+        // Bấm Đo / Dừng
         pauseButton.addEventListener('click', () => {
             if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
             
@@ -411,10 +450,10 @@
                 pauseButton.textContent = "Đang đo...";
                 pauseButton.style.backgroundColor = "#dc3545"; 
                 
-                let text = "Đang thu: ";
-                if (channelConfig.A.active) text += "<span style='color:#ff0000'>Mic A (Đỏ)</span> ";
+                let text = "Đang quét tín hiệu: ";
+                if (channelConfig.A.active) text += "<span style='color:#dc3545'>Kênh A (Đỏ)</span> ";
                 if (channelConfig.A.active && channelConfig.B.active) text += " & ";
-                if (channelConfig.B.active) text += "<span style='color:#0000ff'>Mic B (Xanh)</span>";
+                if (channelConfig.B.active) text += "<span style='color:#0d6efd'>Kênh B (Xanh)</span>";
                 infoText.innerHTML = text;
                 
                 lastDrawTime = performance.now(); 
@@ -422,16 +461,17 @@
                 triggerAutoStop(); 
             } else {
                 isPaused = true; clearTimeout(stopTimer); 
-                pauseButton.textContent = "2. Đo / Dừng";
+                pauseButton.textContent = "Đo / Dừng";
                 pauseButton.style.backgroundColor = "#28a745"; 
-                infoText.innerHTML = isContinuousMode ? "Đã tạm dừng đồ thị" : "Đã đo xong - Ấn <b>Đo / Dừng</b> để tiếp tục";
+                infoText.innerHTML = isContinuousMode ? "Đã tạm dừng vẽ đồ thị" : "Đã quét xong - Ấn <b>Đo / Dừng</b> để tiếp tục";
                 infoText.style.color = "#d93025";
             }
         });
 
+        // Bấm Làm mới
         resetButton.addEventListener('click', () => {
             isPaused = true; clearTimeout(stopTimer); 
-            pauseButton.textContent = "2. Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745"; 
+            pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745"; 
             if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
             
             ['A', 'B'].forEach(ch => {
@@ -447,17 +487,19 @@
             updateUIState(); drawFrame(true); 
         });
 
+        // Chụp ảnh
         saveButton.addEventListener('click', () => {
             const link = document.createElement('a');
             link.download = `DoThi_SongAm.png`; link.href = canvas.toDataURL('image/png'); link.click();
         });
 
+        // Vẽ Canvas Thời gian thực
         function drawFrame(isReset = false) {
             if (!audioCtx) {
                 canvasCtx.fillStyle = '#e6f7ff'; canvasCtx.fillRect(0, 0, canvas.width, canvas.height); return;
             }
 
-            // Đo tần số tự động (Lấy Mic A làm chuẩn, nếu không có lấy Mic B)
+            // Tính Tần số bám trục
             if (!isPaused && (channelConfig.A.index > 2048 || channelConfig.B.index > 2048)) {
                 let now = Date.now();
                 if (now - lastCorrelateTime > 300) {
@@ -480,7 +522,7 @@
             const zoomY = currentZoomY;
             canvasCtx.fillStyle = '#e6f7ff'; canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Vẽ Lưới toạ độ
+            // Vẽ Lưới toạ độ nhạt
             canvasCtx.strokeStyle = '#b3e0ff'; canvasCtx.lineWidth = 1;
             const stepGridX = canvas.width / 10, stepGridY = canvas.height / 8;  
             canvasCtx.beginPath();
@@ -488,7 +530,7 @@
             for(let i = 0; i <= 8; i++) { canvasCtx.moveTo(0, i * stepGridY); canvasCtx.lineTo(canvas.width, i * stepGridY); }
             canvasCtx.stroke();
 
-            // Vẽ Trục Oxy
+            // Vẽ Trục Oxy đậm
             canvasCtx.lineWidth = 2; canvasCtx.strokeStyle = '#000000'; canvasCtx.beginPath();
             canvasCtx.moveTo(0, canvas.height / 2); canvasCtx.lineTo(canvas.width, canvas.height / 2);
             canvasCtx.moveTo(canvas.width / 2, 0); canvasCtx.lineTo(canvas.width / 2, canvas.height);
@@ -497,7 +539,7 @@
             for(let i = 0; i <= 8; i++) { canvasCtx.moveTo(canvas.width/2 - tickSize, i * stepGridY); canvasCtx.lineTo(canvas.width/2 + tickSize, i * stepGridY); }
             canvasCtx.stroke();
 
-            // Vẽ Chú thích
+            // Chữ thông số trên trục
             canvasCtx.fillStyle = '#000000'; canvasCtx.font = 'bold 13px Arial'; canvasCtx.textAlign = 'center'; canvasCtx.textBaseline = 'top';
             let timePerGrid = totalTimeOnScreen / 10;
             for(let i = 0; i <= 10; i++) {
@@ -517,7 +559,7 @@
 
             if (isReset) return;
 
-            // Vẽ Đồ thị Sóng âm
+            // Tiến hành vẽ Dạng sóng âm (Quét Mảng lùi)
             ['A', 'B'].forEach(ch => {
                 const cfg = channelConfig[ch];
                 if (cfg.active && cfg.index > 0) {
@@ -565,6 +607,7 @@
             });
         }
 
+        // Loop Hoạt ảnh Canvas
         function draw(timestamp) {
             if (isPaused) return; 
             requestAnimationFrame(draw);
